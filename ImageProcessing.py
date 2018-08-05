@@ -9,10 +9,9 @@ import os;
 import cv2;
 import matplotlib.pyplot as plt;
 from matplotlib import path;
-from PreprocessingEngine import *;
 import statistics as st
 
-PATH="C:\\Users\\Dell inspiron\\Desktop\\CurrentWorkingDirectory\\OCR"
+PATH="C:\\Users\\Dell inspiron\\Desktop\\CurrentWorkingDirectory\\OCR\\test_data"
 
 os.chdir(PATH);
 Image=cv2.imread('cropped.png');
@@ -77,8 +76,9 @@ for elem in temp:
         extracted_image.append(new_image)
         
         
-#cv2.imshow('Image', I);
-#plt.show();
+cv2.imshow('Image', I);
+cv2.imwrite('ContourDetected.png', I)
+
 
 
 
