@@ -10,12 +10,14 @@ import cv2;
 import matplotlib.pyplot as plt;
 from matplotlib import path;
 import statistics as st
+import numpy as np
 
 PATH="C:\\Users\\Dell inspiron\\Desktop\\CurrentWorkingDirectory\\OCR\\test_data"
 
 os.chdir(PATH);
 Image=cv2.imread('cropped.png');
 I=Image.copy();
+g=np.zeros(I.shape);
 img = cv2.cvtColor(I,cv2.COLOR_BGR2GRAY)
 blur = cv2.GaussianBlur(img,(11,11),0)
 th = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
@@ -49,7 +51,12 @@ for contour in contours:
         areas.append(cv2.contourArea(contour))
 
 median=st.median(areas)
-        
+
+def secSortKey(p):
+        return p[0]
+def sortKey(p):
+        return p[1]
+
 for contour in contours:
         # get rectangle bounding contour
         [x, y, w, h] = cv2.boundingRect(contour)
@@ -60,13 +67,8 @@ for contour in contours:
 extracted_image=list();
 temp=list();
 for contour in a:
-        t=cv2.boundingRect(contour)
-        temp.append(t)
-
-def sortKey(p):
-        return p[1]
-def secSortKey(p):
-        return p[0]
+        [y,x,w,h]=cv2.boundingRect(contour)
+        temp.append([x,y,w,h])
 
 temp.sort(key=sortKey)
 temp.sort(key=secSortKey)
@@ -74,13 +76,32 @@ for elem in temp:
         [x,y,w,h]=elem
         new_image=img[y:y+h, x:x+w]
         extracted_image.append(new_image)
-        
-        
-cv2.imshow('Image', I);
-cv2.imwrite('ContourDetected.png', I)
+
+"""new_temp=np.array(temp)
+max_width=np.sum(new_temp[::, (0,2)], axis=1).max()
+max_height=np.max(new_temp[::, 3])
+nearest=max_height*1.4
+temp.sort(key=lambda r: (int(nearest*round(float(r[1])/nearest))*max_width+r[0]))
+"""
+#cv2.imshow('Image', I);
+#cv2.waitKey(1000)
+#cv2.imwrite('ContourDetected.png', I)
 
 
 
+os.chdir("C:\\Users\\Dell inspiron\\Desktop\\CurrentWorkingDirectory\\OCR\\results")
+
+f=open('output.txt');
+ch=f.read();
+i=0;
+for e in temp:
+        [x,y,w,h]=e
+        if i<len(ch):
+                cv2.putText(g, ch[i], (y,x+h), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+                i=i+2
+
+cv2.imshow('Image', g)
+cv2.imwrite('PuttingBack.png', g)
 
 """def ProcessImage():
         os.chdir(PATH);
